@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ly/CLionProjects/GenerateFiles/parse_file_meta.c
+stdio.h
+-
+string.h
+-
+ctype.h
+-
+assert.h
+-
+unistd.h
+-
+stdlib.h
+-
+

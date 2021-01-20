@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ly/CLionProjects/GenerateFiles/main.cpp
+iostream
+-
+fstream
+-
+string
+-
+cassert
+-
+unistd.h
+-
+cstring
+-
+fcntl.h
+-
+sys/stat.h
+-
+

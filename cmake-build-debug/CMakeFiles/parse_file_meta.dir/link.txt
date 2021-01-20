@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/parse_file_meta.dir/parse_file_meta.c.o  -o parse_file_meta 
