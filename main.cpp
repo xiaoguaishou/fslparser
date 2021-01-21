@@ -7,6 +7,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#define FILE_IDX_START 1
+
+
 using namespace std;
 
 int random_dev_fd = -1;
@@ -94,8 +97,8 @@ int folder_mkdirs(const char *folder_path)
 int main()
 {
     // some vars
-    const string file_meta_path = "/home/ly/fhw/data_fhw1/fz1.txt";
-    const string output_file_dir = "/home/ly/fhw/data_fhw1";   // note: no end "/" character
+    const string file_meta_path = "/home/ly/fhw/data_fhw3/fz3.txt";
+    const string output_file_dir = "/home/ly/fhw/data_fhw3/data";   // note: no end "/" character
 
     // open file meta
     ifstream in(file_meta_path, ios_base::in);
@@ -113,7 +116,8 @@ int main()
     char file_path[100];
     while (getline(in, file_size_str)) {
         sprintf(file_path, "%s/%d.data", output_file_dir.c_str(), file_idx++);
-        generate_file(file_path, file_size_str);
+        if(file_idx >= FILE_IDX_START)
+            generate_file(file_path, file_size_str);
     }
 
     // free resource

@@ -19,13 +19,13 @@
  */
 
 typedef struct file_metadata {
-    char file_path[256];
-    int file_size;
+    char file_path[1000];
+    size_t file_size;
     int chunk_num;
     int UID;
     char **chunks_hash;     // chunks hash
     int *chunks_size;
-    char file_hash[13];     // file hash
+    char file_hash[33];     // file hash
 } file_metadata;
 
 
@@ -43,8 +43,8 @@ const char *WHOLE_FILE_HASH = "Whole File Hash:";
 const size_t WHOLE_FILE_HASH_LEN = 16;
 
 
-const char *file_metas_path = "/home/ly/fhw/data_fhw1/fhw1.txt";
-const char *save_dir_path = "/home/ly/fhw/data_fhw1_meta";      // you should create this directory first!
+const char *file_metas_path = "/home/ly/fhw/data_fhw3/fhw3.txt";
+const char *save_dir_path = "/home/ly/fhw/data_fhw3/data_meta";      // you should create this directory first!
 
 void init_file_metadata(file_metadata *metadata) {
     assert(metadata != NULL);
@@ -54,7 +54,7 @@ void init_file_metadata(file_metadata *metadata) {
     metadata->UID = -1;
     metadata->chunks_hash = NULL;
     metadata->chunks_size = NULL;
-    memset(metadata->file_hash, 0, sizeof(metadata->file_hash));
+    memset(metadata->file_hash, '0', sizeof(metadata->file_hash));
 }
 
 void save_metadata(struct file_metadata *metadata, int *file_idx) {
@@ -62,7 +62,8 @@ void save_metadata(struct file_metadata *metadata, int *file_idx) {
         return;
     }
     // TODO:do save procedure
-    char buf[300];
+    char buf[1000];
+    memset(buf,0,sizeof(buf));
     sprintf(buf,"%s/%d.meta",save_dir_path,*file_idx);
     (*file_idx)++;
     FILE* save_file = fopen(buf,"w");
@@ -72,13 +73,13 @@ void save_metadata(struct file_metadata *metadata, int *file_idx) {
     sprintf(buf,"File path: %s\n",metadata->file_path);
     fwrite(buf,1,strlen(buf),save_file);
     // write File size
-    sprintf(buf,"File size: %d\n",metadata->file_size);
+    sprintf(buf,"File size: %ld\n",metadata->file_size);
     fwrite(buf,1,strlen(buf),save_file);
     // write chunk num
     sprintf(buf,"Chunks: %d\n",metadata->chunk_num);
     fwrite(buf,1,strlen(buf),save_file);
     // write uid
-    sprintf(buf,"UID: %d\n",metadata->UID);
+    sprintf(buf,"UID: %dabcdefghijk\n",metadata->UID);
     fwrite(buf,1,strlen(buf),save_file);
     // write chunk hash
     sprintf(buf, "Chunk Hash\tChunk Size\n");
@@ -155,8 +156,8 @@ int main() {
                 p++;
             }
             *p = '\0';
-            metadata.file_size = atoi(start) * base;
-            printf("file_size:%d\n", metadata.file_size);
+            metadata.file_size = atoll(start) * base;
+            printf("file_size:%ld\n", metadata.file_size);
         } else if (!strncasecmp(CHUNKS, line, CHUNKS_LEN)) {
             // remove '\n' character if has one
             if (line[read_len - 1] == '\n') line[read_len - 1] = '\0';
@@ -183,12 +184,13 @@ int main() {
                 read_len = getline(&line, &len, file_metas);
                 assert(read_len != -1);
 
-                metadata.chunks_hash[i] = malloc(13 * sizeof(char));
-                memset(metadata.chunks_hash[i],0,13*sizeof(char));
+                metadata.chunks_hash[i] = malloc(33 * sizeof(char));
+                memset(metadata.chunks_hash[i],'0',33*sizeof(char));
+                metadata.chunks_hash[i][32] = '\0';
                 char hash[13];      // because hash has 12 chars
                 memset(hash, 0, sizeof(hash));
 
-                char *p1 = metadata.chunks_hash[i];
+                char *p1 = metadata.chunks_hash[i] + 20;
                 char *p2 = line;
                 while (!isspace(*p2)) {
                     if (*p2 != ':') {
@@ -214,11 +216,15 @@ int main() {
             // get file hash
             char *start = strchr(line, ':') + 1;
             while (isspace(*start)) start++;
-            strcpy(metadata.file_hash, start);
+            metadata.file_hash[32] = '\0';
+            strcpy(metadata.file_hash+20, start);
             printf("file_hash:%s\n\n", metadata.file_hash);
 //            pause();
         }
     }
+    // final file
+    save_metadata(&metadata,&file_idx);
+    free_metadata(&metadata);
 
     fclose(file_metas);
     return 0;
