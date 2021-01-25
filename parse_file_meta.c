@@ -64,7 +64,7 @@ void save_metadata(struct file_metadata *metadata, int *file_idx) {
 
     // check whether need to exclude this file
     if(metadata->file_size <= 2*1024UL || // 2KB
-        metadata->file_size >= 2*1024*1024*1024UL){ // 2GB
+        metadata->file_size >= 1*1024*1024*1024UL){ // 2GB
         return;
     }
 

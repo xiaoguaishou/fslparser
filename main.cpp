@@ -42,14 +42,14 @@ void write_file_with_random_data(const string &file_path, size_t bytes)
 int exclude_files(size_t file_bytes){
     /* Condition: if this file size is less than 2KB, we need to exclude this file*/
     if(file_bytes <= 2*1024UL ||    // 2KB
-        file_bytes >= 2*1024*1024*1024UL) { // 2GB
+        file_bytes >= 1*1024*1024*1024UL) { // 2GB
         return 1;
     }
     return 0;
 }
 
 
-void generate_file(const string &file_path, const string &file_size_str)
+bool generate_file(const string &file_path, const string &file_size_str)
 {
     cout << "now generate:" << file_size_str << "--->" << file_path << '\n';
     assert(file_size_str.size() >= 2);
@@ -66,10 +66,11 @@ void generate_file(const string &file_path, const string &file_size_str)
     }
 
     if(exclude_files(file_bytes)){
-        return;
+        return false;
     }
 
     write_file_with_random_data(file_path, file_bytes);
+    return true;
 }
 
 /*******************************************************************
@@ -132,10 +133,14 @@ int main()
     string file_size_str;
     int file_idx = 1;
     char file_path[100];
+    bool file_valid = true; // true represent omit this file
     while (getline(in, file_size_str)) {
         sprintf(file_path, "%s/%d.data", output_file_dir.c_str(), file_idx++);
-        if(file_idx >= FILE_IDX_START)
-            generate_file(file_path, file_size_str);
+        if(file_idx >= FILE_IDX_START){
+            file_valid = generate_file(file_path, file_size_str);
+            if(!file_valid)
+                file_idx--; //if file_size <=2k, >=1G. file_name--
+        }
     }
 
     // free resource
@@ -143,4 +148,3 @@ int main()
     in.close();
     return 0;
 }
-
