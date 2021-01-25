@@ -33,6 +33,21 @@ void write_file_with_random_data(const string &file_path, size_t bytes)
     fclose(out_file);
 }
 
+/**
+ * 1 means excluding this file
+ * 0 means including this file
+ * @param file_bytes
+ * @return
+ */
+int exclude_files(size_t file_bytes){
+    /* Condition: if this file size is less than 2KB, we need to exclude this file*/
+    if(file_bytes <= 2*1024UL ||    // 2KB
+        file_bytes >= 2*1024*1024*1024UL) { // 2GB
+        return 1;
+    }
+    return 0;
+}
+
 
 void generate_file(const string &file_path, const string &file_size_str)
 {
@@ -44,14 +59,17 @@ void generate_file(const string &file_path, const string &file_size_str)
 
     if (isdigit(c)) {    // B
         file_bytes = stoll(file_size_str.substr(0, file_size_str.size() - 1));
-        write_file_with_random_data(file_path, file_bytes);
     } else if (c == 'K' || c == 'k') { // KB
         file_bytes = stoll(file_size_str.substr(0, file_size_str.size() - 2)) * 1024;
-        write_file_with_random_data(file_path, file_bytes);
     } else if (c == 'M' || c == 'm') { // MB
         file_bytes = stoll(file_size_str.substr(0, file_size_str.size() - 2)) * 1024 * 1024;
-        write_file_with_random_data(file_path, file_bytes);
     }
+
+    if(exclude_files(file_bytes)){
+        return;
+    }
+
+    write_file_with_random_data(file_path, file_bytes);
 }
 
 /*******************************************************************
